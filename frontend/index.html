@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR Document Extractor</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-file-text"></i>
+                    <h1>OCR Document Extractor</h1>
+                </div>
+                <p class="subtitle">Extract information from Indian Identity Documents</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="workflow-container">
+                
+                <!-- Step 1: Input -->
+                <div class="workflow-step">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h2>Upload Document</h2>
+                    </div>
+                    <div class="upload-section">
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-content">
+                                <div class="upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <h3>Drop your document here</h3>
+                                <p>Supports: Aadhaar, PAN Card, Driving License</p>
+                                <p class="file-formats">PNG, JPG, JPEG, WebP (Max 10MB)</p>
+                                <input type="file" id="fileInput" accept="image/*" hidden>
+                                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                                    <i class="fas fa-folder-open"></i>
+                                    Choose File
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Preview -->
+                <div class="workflow-step" id="previewStep" style="display: none;">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h2>Preview & Process</h2>
+                    </div>
+                    <div class="preview-section">
+                        <div class="image-container">
+                            <img id="imagePreview" alt="Document preview">
+                            <div class="image-overlay">
+                                <div class="file-info">
+                                    <span id="fileName"></span>
+                                    <span id="fileSize"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preview-actions">
+                            <button class="btn btn-primary" id="processBtn">
+                                <i class="fas fa-cogs"></i>
+                                Process Document
+                            </button>
+                            <button class="btn btn-secondary" id="clearBtn">
+                                <i class="fas fa-times"></i>
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Output -->
+                <div class="workflow-step" id="outputStep" style="display: none;">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h2>Extracted Data</h2>
+                    </div>
+                    <div class="output-section">
+                        <div class="results-header">
+                            <div class="document-type" id="documentType">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Document Detected</span>
+                            </div>
+                            <div class="accuracy-badge">
+                                <i class="fas fa-check-circle"></i>
+                                <span id="accuracyScore">99.8% Accuracy</span>
+                            </div>
+                        </div>
+                        
+                        <div class="extracted-data" id="extractedData">
+                            <!-- Results will be populated here -->
+                        </div>
+                        
+                        <div class="output-actions">
+                            <button class="btn btn-success" id="downloadBtn">
+                                <i class="fas fa-download"></i>
+                                Download CSV
+                            </button>
+                            <button class="btn btn-secondary" id="copyBtn">
+                                <i class="fas fa-copy"></i>
+                                Copy Data
+                            </button>
+                            <button class="btn btn-secondary" id="newDocBtn">
+                                <i class="fas fa-plus"></i>
+                                Process New
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Processing Overlay -->
+            <div class="processing-overlay" id="processingOverlay" style="display: none;">
+                <div class="processing-content">
+                    <div class="processing-animation">
+                        <div class="spinner"></div>
+                        <div class="pulse-ring"></div>
+                    </div>
+                    <h3>Processing Document</h3>
+                    <p id="processingStatus">Analyzing document structure...</p>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <span class="progress-text" id="progressText">0%</span>
+                    </div>
+                    <button class="btn btn-outline" id="cancelBtn">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </button>
+                </div>
+            </div>
+
+            <!-- Error Modal -->
+            <div class="modal-overlay" id="errorModal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Processing Failed</h3>
+                        <button class="modal-close" id="closeErrorModal">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="errorMessage">Unable to process the document.</p>
+                        <div class="error-tips">
+                            <h4>Tips for better results:</h4>
+                            <ul>
+                                <li>Ensure good lighting and clear image quality</li>
+                                <li>Document should be flat and fully visible</li>
+                                <li>Avoid shadows or reflections on the document</li>
+                                <li>Use higher resolution images when possible</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" id="retryBtn">
+                            <i class="fas fa-redo"></i>
+                            Try Again
+                        </button>
+                        <button class="btn btn-secondary" id="closeErrorBtn">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Toast -->
+            <div class="toast" id="successToast" style="display: none;">
+                <div class="toast-content">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="toastMessage">Success!</span>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p><i class="fas fa-code"></i> Developed by <strong>Vineet Unde</strong></p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
